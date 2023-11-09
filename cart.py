@@ -1,9 +1,9 @@
 import sqlite3
 
 class Cart:
-    def __init__(self, databaseName="", inventoryName=""):
+    def __init__(self, databaseName="", tableName=""):
         self.databaseName = databaseName
-        self.inventoryName = inventoryName
+        self.tableName = tableName
     
     '''
     Displays all books in the logged in
@@ -12,17 +12,21 @@ class Cart:
     User`s cart
     '''
     def viewCart(self, userID, inventoryDatabase):
+        #connect to DB
         connection = sqlite3.connect(self.databaseName)
         cursor = connection.cursor()
-        cursor.execute(f'''SELECT i.Title, i.Author, c.Quantity, 
-                        FROM {inventoryDatabase} as i, {self.databaseName} as c 
+
+        #get the overlap between the users cart and inventory to return the books info
+        cursor.execute(f'''SELECT i.Title, i.Author, c.Quantity 
+                        FROM {inventoryDatabase} as i, {self.tableName} as c 
                         WHERE c.UserID={userID} AND c.ISBN=i.ISBN''')
         result = cursor.fetchall()
 
+        #print every book in the results
         print("Your Current Shopping Cart:")
         print("Title - Author  xQuantity")
         for listing in result:
-            listingRow = f"{listing[0]} - {listing[1]} x{listing[2]}"
+            listingRow = f"{listing[0]} - {listing[1]} {listing[2]}"
             print(listingRow)
 
         cursor.close()
@@ -34,7 +38,27 @@ class Cart:
     the appropriate cart
     '''
     def addToCart(self, userID, ISBN):
-        pass
+        #connect to the database
+        connection = sqlite3.connect(self.databaseName)
+        cursor = connection.cursor()
+
+        #select the quantity of the selected book
+        cursor.execute(f"SELECT Quantity FROM {self.tableName} WHERE UserID={userID} AND ISBN={ISBN}")
+        result = cursor.fetchone()
+
+        #if it already exists then update it to plus 1
+        if result:
+           cursor.execute(f"UPDATE {self.tableName} SET Quantity='{result[0] + 1}' WHERE UserID={userID} AND ISBN={ISBN}")
+
+        #if it doesn't exist then create the new book entry with a quantity of 1
+        else:
+            cursor.execute(f"INSERT INTO {self.tableName} (UserID, ISBN, Quantity) VALUES ('{userID}', '{ISBN}', '1')")
+        
+        #commit the changes then close the db
+        connection.commit()
+        cursor.close()
+        connection.close()
+
 
     
     '''
