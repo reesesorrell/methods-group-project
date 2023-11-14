@@ -1,6 +1,5 @@
 import sqlite3
 
-
 class Inventory:
 
   def __init__(self, databaseName, tableName):
@@ -12,9 +11,9 @@ class Inventory:
     cursor = connection.cursor()
     cursor.execute(f"SELECT * FROM {self.tableName}")
     result = cursor.fetchall()
-    print("Current Inventory:\nTitle\tAuthor\tQuantity\n")
+    print("Current Inventory:\nISBN\t\tTitle\t\tAuthor\t\tGenre\t\tPages\t\tRelease Date\t\tStock\n")
     for item in result:
-      print(f"{item[0]}\t{item[1]}\t{item[2]}")
+      print(f"{item[0]}\t\t{item[1]}\t\t{item[2]}\t\t{item[3]}\t\t{item[4]}\t\t{item[5]}\t\t\t{item[6]}")
     cursor.close()
     connection.close()
 
@@ -24,9 +23,9 @@ class Inventory:
     title = input("Please enter the title of the book you want: ")
     cursor.execute(f'''SELECT * FROM {self.tableName} WHERE Title LIKE "%{title}%"''')
     result = cursor.fetchall()
-    print("Search Results:\nTitle\tAuthor\tQuantity\n")
+    print("Search Results:\nISBN\t\tTitle\t\tAuthor\t\tGenre\t\tPages\t\tRelease Date\t\tStock\n")
     for item in result:
-      print(f"{item[0]}\t{item[1]}\t{item[2]}")
+      print(f"{item[0]}\t\t{item[1]}\t\t{item[2]}\t\t{item[3]}\t\t{item[4]}\t\t{item[5]}\t\t\t{item[6]}")
     cursor.close()
     connection.close()
     
@@ -35,7 +34,7 @@ class Inventory:
     cursor = connection.cursor()
     cursor.execute(f"SELECT stock FROM {self.tableName} WHERE ISBN={ISBN}")
     result = cursor.fetchone()
-    stock = result
+    stock = result[0]
     cursor.execute(f"UPDATE {self.tableName} SET stock={stock-1} WHERE ISBN={ISBN}")
     connection.commit()
     cursor.close()
