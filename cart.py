@@ -67,7 +67,18 @@ class Cart:
     remove an item from the user`s cart
     '''
     def removeFromCart(self, userID, ISBN):
-        pass
+        #connect to the database
+        connection = sqlite3.connect(self.databaseName)
+        cursor = connection.cursor()
+
+        #delete the book from cart
+        cursor.execute(f"DELETE FROM {self.tableName} WHERE ISBN='{ISBN}' AND UserId='{userID}'")
+
+        #commit the changes then close the db
+        connection.commit()
+        cursor.close()
+        connection.close()
+
 
     '''
     The user checks out - this removes all their cart items. It also
@@ -75,4 +86,26 @@ class Cart:
     amount the user bought (prior to removing them from the cart)
     '''
     def checkOut(self, userID):
-        pass
+        #connect to the database
+        connection = sqlite3.connect(self.databaseName)
+        cursor = connection.cursor()
+
+        #get the users cart
+        cursor.execute(f'''SELECT ISBN, Quantity FROM {self.tableName}
+                        WHERE UserID={userID}''')
+        result = cursor.fetchall()
+
+
+        #remove every book in the from inventory
+        for listing in result:
+            ISBN = listing[0]
+            quantity = listing[1]
+            for i in range(quantity):
+                inventory.decreaseStock(ISBN)
+
+        #delete the users cart 
+        cursor.execute(f"DELETE FROM {self.tableName} WHERE UserId='{userID}'")
+
+        connection.commit()
+        cursor.close()
+        connection.close()
