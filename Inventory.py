@@ -11,7 +11,7 @@ class Inventory:
     cursor = connection.cursor()
     cursor.execute(f"SELECT * FROM {self.tableName}")
     result = cursor.fetchall()
-    print("Current Inventory:\nISBN\t\tTitle\t\tAuthor\t\tGenre\t\tPages\t\tRelease Date\t\tStock\n")
+    print("Current Inventory:\n\nISBN\t\tTitle\t\tAuthor\t\tGenre\t\tPages\t\tRelease Date\t\tStock\n")
     for item in result:
       print(f"{item[0]}\t\t{item[1]}\t\t{item[2]}\t\t{item[3]}\t\t{item[4]}\t\t{item[5]}\t\t\t{item[6]}")
     cursor.close()
@@ -20,15 +20,15 @@ class Inventory:
   def searchInventory(self):
     connection = sqlite3.connect(self.databaseName)
     cursor = connection.cursor()
-    title = input("Please enter the title of the book you want: ")
+    title = input("\nPlease enter the title of the book you want: ")
     cursor.execute(f'''SELECT * FROM {self.tableName} WHERE Title LIKE "%{title}%"''')
     result = cursor.fetchall()
-    print("Search Results:\nISBN\t\tTitle\t\tAuthor\t\tGenre\t\tPages\t\tRelease Date\t\tStock\n")
+    print("\nSearch Results:\n\nISBN\t\tTitle\t\tAuthor\t\tGenre\t\tPages\t\tRelease Date\t\tStock\n")
     for item in result:
       print(f"{item[0]}\t\t{item[1]}\t\t{item[2]}\t\t{item[3]}\t\t{item[4]}\t\t{item[5]}\t\t\t{item[6]}")
     cursor.close()
     connection.close()
-    
+
   def decreaseStock(self, ISBN):
     connection = sqlite3.connect(self.databaseName)
     cursor = connection.cursor()
