@@ -67,7 +67,18 @@ class Cart:
     remove an item from the user`s cart
     '''
     def removeFromCart(self, userID, ISBN):
-        pass
+        #connect to the database
+        connection = sqlite3.connect(self.databaseName)
+        cursor = connection.cursor()
+
+        #delete the book
+        cursor.execute(f"DELETE FROM {self.tableName} WHERE ISBN='{ISBN}' AND UserId='{userID}'")
+        
+        #commit the changes then close the db
+        connection.commit()
+        cursor.close()
+        connection.close()
+
 
     '''
     The user checks out - this removes all their cart items. It also
