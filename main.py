@@ -14,6 +14,7 @@ def beforeLoginMenu():
             if user.login():
                 print("Logged in successfully.\n")
                 mainMenu()
+                break;
             else:
                 print("Login failed. Please try again.\n")
         elif choice == "2":
