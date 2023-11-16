@@ -1,6 +1,8 @@
 import sqlite3
+from Inventory import Inventory
 
 class Cart:
+    #make constructor with empty default parameters
     def __init__(self, databaseName="", tableName=""):
         self.databaseName = databaseName
         self.tableName = tableName
@@ -19,15 +21,19 @@ class Cart:
         #get the overlap between the users cart and inventory to return the books info
         cursor.execute(f'''SELECT i.Title, i.Author, c.Quantity 
                         FROM {inventoryDatabase} as i, {self.tableName} as c 
-                        WHERE c.UserID={userID} AND c.ISBN=i.ISBN''')
+                        WHERE c.UserID=? AND c.ISBN=i.ISBN''', (userID,))
         result = cursor.fetchall()
 
-        #print every book in the results
-        print("Your Current Shopping Cart:")
-        print("Title - Author  xQuantity")
-        for listing in result:
-            listingRow = f"{listing[0]} - {listing[1]} {listing[2]}"
-            print(listingRow)
+        if result:
+            #print every book in the results
+            print("Your Current Shopping Cart:")
+            print("Title - Author  xQuantity")
+            for listing in result:
+                listingRow = f"{listing[0]} - {listing[1]} {listing[2]}"
+                print(listingRow)
+
+        else:
+            print("Your cart is empty.")
 
         cursor.close()
         connection.close()
@@ -43,19 +49,22 @@ class Cart:
         cursor = connection.cursor()
 
         #select the quantity of the selected book
-        cursor.execute(f"SELECT Quantity FROM {self.tableName} WHERE UserID={userID} AND ISBN={ISBN}")
+        cursor.execute(f"SELECT Quantity FROM {self.tableName} WHERE UserID=? AND ISBN=?", (userID, ISBN))
         result = cursor.fetchone()
 
-        #if it already exists then update it to plus 1
         if result:
-           cursor.execute(f"UPDATE {self.tableName} SET Quantity='{result[0] + 1}' WHERE UserID={userID} AND ISBN={ISBN}")
+            #if it already exists then update it to plus 1
+            cursor.execute(f"UPDATE {self.tableName} SET Quantity='{result[0] + 1}' WHERE UserID=? AND ISBN=?", (userID, ISBN))
 
         #if it doesn't exist then create the new book entry with a quantity of 1
         else:
-            cursor.execute(f"INSERT INTO {self.tableName} (UserID, ISBN, Quantity) VALUES ('{userID}', '{ISBN}', '1')")
+            cursor.execute(f"INSERT INTO {self.tableName} (UserID, ISBN, Quantity) VALUES (?, ?, ?)", (userID, ISBN, 1))
         
         #commit the changes then close the db
         connection.commit()
+
+        print("A copy of that book has been added to your cart.")
+
         cursor.close()
         connection.close()
 
@@ -72,10 +81,17 @@ class Cart:
         cursor = connection.cursor()
 
         #delete the book from cart
-        cursor.execute(f"DELETE FROM {self.tableName} WHERE ISBN='{ISBN}' AND UserId='{userID}'")
+        try:
+            cursor.execute(f"DELETE FROM {self.tableName} WHERE ISBN=? AND UserId=?", (ISBN, userID))
 
-        #commit the changes then close the db
-        connection.commit()
+            #commit the changes then close the db
+            connection.commit()
+
+            print("That book has been removed from your cart.")
+
+        except:
+            print("That book isn't in your cart.")
+
         cursor.close()
         connection.close()
 
@@ -92,10 +108,10 @@ class Cart:
 
         #get the users cart
         cursor.execute(f'''SELECT ISBN, Quantity FROM {self.tableName}
-                        WHERE UserID={userID}''')
+                        WHERE UserID=?''', (userID,))
         result = cursor.fetchall()
 
-
+        inventory = Inventory(self.databaseName, "Inventory")
         #remove every book in the from inventory
         for listing in result:
             ISBN = listing[0]
@@ -104,7 +120,7 @@ class Cart:
                 inventory.decreaseStock(ISBN)
 
         #delete the users cart 
-        cursor.execute(f"DELETE FROM {self.tableName} WHERE UserId='{userID}'")
+        cursor.execute(f"DELETE FROM {self.tableName} WHERE UserId=?", (userID,))
 
         connection.commit()
         cursor.close()
