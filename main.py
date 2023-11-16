@@ -49,7 +49,7 @@ def mainMenu():
             print("Invalid choice, please try again.\n")
 
 def inventoryMenu():
-    choice = input("\nInventory Information Menu:\n1.\tGo back to Main Menu\n2.\tView inventory information\n4.\tSearch Inventory\n\nPlease choose an option: ")
+    choice = input("\nInventory Information Menu:\n1.\tGo back to Main Menu\n2.\tView inventory information\n3.\tSearch Inventory\n\nPlease choose an option: ")
 
     if choice == "1":
         mainMenu()
@@ -66,7 +66,7 @@ def cartMenu():
     if choice == "1":
         mainMenu()
     elif choice == "2":
-        cart.viewCart()
+        cart.viewCart(user.getUserID(), "Inventory")
     elif choice == "3":
         book = input("Please enter the ISBN of the book you wish to add to the Cart: ")
         cart.addToCart(user.getUserID(), int(book))
@@ -78,4 +78,5 @@ def cartMenu():
     else:
         print("Invalid choice.\n")
 
-beforeLoginMenu()
+if __name__ == "__main__":
+    beforeLoginMenu()
