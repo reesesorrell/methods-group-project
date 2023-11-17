@@ -1,4 +1,4 @@
-from user import User 
+from User import User 
 def main():
     database_name = "store.db"
     table_name = "user"
