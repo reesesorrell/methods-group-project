@@ -1,3 +1,4 @@
+
 from Inventory import Inventory
 from User import User
 from Cart import Cart
@@ -81,3 +82,4 @@ def cartMenu():
 
 if __name__ == "__main__":
     beforeLoginMenu()
+
