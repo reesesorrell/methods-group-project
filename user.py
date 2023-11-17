@@ -1,4 +1,5 @@
 import sqlite3
+import uuid
 
 class User:
     # Initializer or constructor method to create an instance of the User class
@@ -108,19 +109,28 @@ class User:
         return dict(zip(columns, account_info)) if account_info else None
 
     # Method to insert a new account record into the database
-    def create_account_in_db(self, email, password, first_name, last_name, address, city, state, zip, payment):
+    def create_account_in_db(self, email, password, first_name, last_name, address, city, state, zip_code, payment):
         try:
             connection = sqlite3.connect(self.databaseName)
             cursor = connection.cursor()
-            # SQL query to insert the new account data
-            cursor.execute(f"INSERT INTO {self.tableName} (Email, Password, FirstName, LastName, Address, City, State, Zip, Payment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                           (email, password, first_name, last_name, address, city, state, zip, payment))
+            user_id = self.generate_user_id()  # Generate a unique UserID
+
+            cursor.execute("INSERT INTO User (UserID, Email, Password, FirstName, LastName, Address, City, State, Zip, Payment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (user_id, email, password, first_name, last_name, address, city, state, zip_code, payment))
+
             connection.commit()
-            connection.close()
-            return True
-        except sqlite3.IntegrityError:
-            # If insertion fails due to an integrity error (like duplicate email), return False
+        except sqlite3.IntegrityError as e:
+            print(f"Integrity Error: {e}")
             return False
+
+        finally:
+            connection.close()
+        return True
+
+    def generate_user_id(self):
+        return str(uuid.uuid4())
+
+
 
     # Setter method to change the database name
     def set_database_name(self, databaseName):
