@@ -63,7 +63,7 @@ def inventoryMenu():
         print("Invalid choice.\n")
     
 def cartMenu():
-    choice = input("\Cart Information Menu:\n1.\tGo back to Main Menu\n2.\tView Cart information\n3.\tAdd items to Cart\n4.\tRemove an item from Cart\n5.\tCheck-Out\n\nPlease choose an option: ")
+    choice = input("\nCart Information Menu:\n1.\tGo back to Main Menu\n2.\tView Cart information\n3.\tAdd items to Cart\n4.\tRemove an item from Cart\n5.\tCheck-Out\n\nPlease choose an option: ")
 
     if choice == "1":
         mainMenu()
