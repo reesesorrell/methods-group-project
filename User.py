@@ -1,6 +1,7 @@
 import sqlite3
 import uuid
 
+
 class User:
     # Initializer or constructor method to create an instance of the User class
     def __init__(self, databaseName, tableName):
@@ -109,6 +110,7 @@ class User:
         return dict(zip(columns, account_info)) if account_info else None
 
     # Method to insert a new account record into the database
+
     def create_account_in_db(self, email, password, first_name, last_name, address, city, state, zip_code, payment):
         try:
             connection = sqlite3.connect(self.databaseName)
@@ -129,6 +131,7 @@ class User:
 
     def generate_user_id(self):
         return str(uuid.uuid4())
+
 
 
 
